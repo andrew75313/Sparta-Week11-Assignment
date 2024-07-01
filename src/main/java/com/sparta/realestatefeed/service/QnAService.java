@@ -1,5 +1,6 @@
 package com.sparta.realestatefeed.service;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.dto.QnARequestDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
@@ -7,12 +8,15 @@ import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.ApartRepository;
 import com.sparta.realestatefeed.repository.QnARepository;
 import com.sparta.realestatefeed.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -20,15 +24,13 @@ import java.util.NoSuchElementException;
 public class QnAService {
 
     private QnARepository qnARepository;
-    private UserRepository userRepository;
     private ApartRepository apartRepository;
+    private JPAQueryFactory jpaQueryFactory;
 
-    public QnAService(QnARepository qnARepository, UserRepository userRepository, ApartRepository apartRepository) {
-
+    public QnAService(QnARepository qnARepository, ApartRepository apartRepository, JPAQueryFactory jpaQueryFactory) {
         this.qnARepository = qnARepository;
-        this.userRepository = userRepository;
         this.apartRepository = apartRepository;
-
+        this.jpaQueryFactory = jpaQueryFactory;
     }
 
     @Transactional
@@ -41,7 +43,7 @@ public class QnAService {
             throw new NoSuchElementException("매매중인 아파트가 존재하지 않습니다.");
         }
 
-        QnA saveQnA = new QnA(qnARequestDto.getContent(),user, apart);
+        QnA saveQnA = new QnA(qnARequestDto.getContent(), user, apart);
 
         qnARepository.save(saveQnA);
 
@@ -103,19 +105,22 @@ public class QnAService {
 
     }
 
-    public CommonDto<List<QnAResponseDto>> selectByApartId(Long apartId) {
+    public CommonDto<List<QnAResponseDto>> selectByApartId(Long apartId, int page) {
 
-        List<QnA> qnas = qnARepository.findByApartId(apartId);
+        QQnA qQnA = QQnA.qnA;
 
-        List<QnAResponseDto> responseDtos = new ArrayList<>();
+        List<QnA> qnaList = jpaQueryFactory.selectFrom(qQnA)
+                .where(qQnA.apart.id.eq(apartId))
+                .orderBy(qQnA.createdAt.desc())
+                .offset(page * 5)
+                .limit(5)
+                .fetch();
 
-        for (QnA l : qnas) {
-            QnAResponseDto qnaResponseDto = new QnAResponseDto(l);
-            responseDtos.add(qnaResponseDto);
+        List<QnAResponseDto> qnAResponseDtoList = qnaList.stream()
+                .map(QnAResponseDto::new)
+                .toList();
 
-        }
-
-        CommonDto<List<QnAResponseDto>> commonDto = new CommonDto<>(HttpStatus.OK.value(), "아파트에 대한 문의 조회에 성공하셨습니다.", responseDtos);
+        CommonDto<List<QnAResponseDto>> commonDto = new CommonDto<>(HttpStatus.OK.value(), "아파트에 대한 문의 조회에 성공하셨습니다.", qnAResponseDtoList);
 
         return commonDto;
     }
