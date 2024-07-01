@@ -1,9 +1,11 @@
 package com.sparta.realestatefeed.service;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.ApartRequestDto;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.entity.Apart;
+import com.sparta.realestatefeed.entity.QApart;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.entity.UserRoleEnum;
 import com.sparta.realestatefeed.repository.ApartRepository;
@@ -25,9 +27,11 @@ import java.util.stream.Collectors;
 public class ApartService {
 
     private final ApartRepository apartRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
-    public ApartService(ApartRepository apartRepository) {
+    public ApartService(ApartRepository apartRepository, JPAQueryFactory jpaQueryFactory) {
         this.apartRepository = apartRepository;
+        this.jpaQueryFactory = jpaQueryFactory;
     }
 
     @Transactional
@@ -47,24 +51,30 @@ public class ApartService {
         return new CommonDto<>(HttpStatus.OK.value(), "아파트 조회에 성공하였습니다.", responseDto);
     }
 
-    public CommonDto<List<ApartResponseDto>> getAparts(String area, int page, int size) {
+    public CommonDto<List<ApartResponseDto>> getAparts(String area, int page) {
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Apart> apartsPage;
-        if (area == null || area.isEmpty()) {
-            apartsPage = apartRepository.findAllByOrderByModifiedAtDesc(pageable);
-        } else {
-            apartsPage = apartRepository.findByArea(area, pageable);
+        QApart qApart = QApart.apart;
+
+        var query = jpaQueryFactory.selectFrom(qApart)
+                .orderBy(qApart.createdAt.desc());
+
+        if (area != null) {
+            query.where(qApart.area.eq(area));
         }
 
-        if (apartsPage.isEmpty()) {
+        List<Apart> apartList = query.offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        List<ApartResponseDto> apartResponseDtoList = apartList.stream()
+                .map(ApartResponseDto::new)
+                .toList();
+
+        if (apartResponseDtoList.isEmpty()) {
             return new CommonDto<>(HttpStatus.NOT_FOUND.value(), "해당 지역의 아파트가 없습니다.", new ArrayList<>());
         }
 
-        List<ApartResponseDto> responseDtos = apartsPage.stream()
-                .map(ApartResponseDto::new)
-                .collect(Collectors.toList());
-        return new CommonDto<>(HttpStatus.OK.value(), (area == null || area.isEmpty() ? "모든" : area + " 지역별") + " 아파트 조회에 성공하였습니다.", responseDtos);
+        return new CommonDto<>(HttpStatus.OK.value(), (area == null || area.isEmpty() ? "모든" : area + " 지역별") + " 아파트 조회에 성공하였습니다.", apartResponseDtoList);
     }
 
     @Transactional
