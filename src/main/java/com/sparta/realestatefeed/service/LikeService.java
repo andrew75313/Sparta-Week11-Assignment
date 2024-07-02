@@ -1,8 +1,10 @@
 package com.sparta.realestatefeed.service;
 
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
+import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.exception.UserAlreadyExistsException;
 import com.sparta.realestatefeed.repository.LikeRepository;
@@ -127,5 +129,41 @@ public class LikeService {
                 .toList();
 
         return new CommonDto<>(HttpStatus.OK.value(), "좋아요한 아파트 조회에 성공하였습니다.", responseDtoList);
+    }
+
+    public CommonDto<?> getFavoriteQnas(int page, User user) {
+
+        QLike qLike = QLike.like;
+        QUser qUser = QUser.user;
+        QQnA qQna = QQnA.qnA;
+
+        List<Like> likeList = jpaQueryFactory.selectFrom(qLike)
+                .innerJoin(qLike.qna, qQna).fetchJoin()
+                .innerJoin(qLike.user, qUser).fetchJoin()
+                .where(qUser.userName.eq(user.getUserName()))
+                .orderBy(qLike.qna.createdAt.desc())
+                .offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        if (likeList.isEmpty()) {
+            throw new NoSuchElementException("좋아요한 문의글이 없습니다.");
+        }
+
+        List<QnAResponseDto> responseDtoList = likeList.stream()
+                .map(Like -> new QnAResponseDto(Like.getQna()))
+                .toList();
+
+        for (QnAResponseDto qnAResponseDto : responseDtoList) {
+
+            Long likesCount = jpaQueryFactory.select(Wildcard.count)
+                    .from(qLike)
+                    .where(qLike.qna.qnaId.eq(qnAResponseDto.getQnaId()))
+                    .fetchOne();
+
+            qnAResponseDto.updateLikesCount(likesCount);
+        }
+
+        return new CommonDto<>(HttpStatus.OK.value(), "좋아요한 문의글 조회에 성공하였습니다.", responseDtoList);
     }
 }

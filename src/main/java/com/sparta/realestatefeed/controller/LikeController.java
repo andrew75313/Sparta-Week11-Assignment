@@ -42,4 +42,13 @@ public class LikeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/qna/like")
+    public ResponseEntity<?> getFavoriteQnas(@RequestParam(defaultValue = "1") int page,
+                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        CommonDto<?> response = likeService.getFavoriteQnas(page-1, userDetails.getUser());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
