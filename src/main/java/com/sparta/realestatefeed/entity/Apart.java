@@ -38,7 +38,10 @@ public class Apart extends Timestamped {
     private User user;
 
     @OneToMany(mappedBy = "apart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QnA> qnas;
+    private List<QnA> qnaList;
+
+    @OneToMany(mappedBy = "apart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likeList;
 
     public Apart(ApartRequestDto requestDto, User user) {
         this.apartName = requestDto.getApartName();
