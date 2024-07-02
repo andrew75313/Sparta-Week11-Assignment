@@ -1,20 +1,25 @@
 package com.sparta.realestatefeed.service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.exception.UserAlreadyExistsException;
 import com.sparta.realestatefeed.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
 public class LikeService {
 
+    private static final Logger log = LoggerFactory.getLogger(LikeService.class);
     private final LikeRepository likeRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -96,5 +101,31 @@ public class LikeService {
         }
 
         return new CommonDto<>(HttpStatus.OK.value(), message, null);
+    }
+
+    public CommonDto<?> getFavroiteAparts(int page, User user) {
+
+        QLike qLike = QLike.like;
+        QUser qUser = QUser.user;
+        QApart qApart = QApart.apart;
+
+        List<Like> likeList = jpaQueryFactory.selectFrom(qLike)
+                .innerJoin(qLike.apart, qApart).fetchJoin()
+                .innerJoin(qLike.user, qUser).fetchJoin()
+                .where(qUser.userName.eq(user.getUserName()))
+                .orderBy(qLike.apart.createdAt.desc())
+                .offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        if (likeList.isEmpty()) {
+            throw new NoSuchElementException("좋아요한 아파트 판매글이 없습니다.");
+        }
+
+        List<ApartResponseDto> responseDtoList = likeList.stream()
+                .map(Like -> new ApartResponseDto(Like.getApart()))
+                .toList();
+
+        return new CommonDto<>(HttpStatus.OK.value(), "좋아요한 아파트 조회에 성공하였습니다.", responseDtoList);
     }
 }

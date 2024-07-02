@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,9 +27,18 @@ public class LikeController {
 
     @PostMapping("/aparts/{apartId}/qna/{qnaId}/like")
     public ResponseEntity<?> likeQna(@PathVariable("qnaId") Long qnaId,
-                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         CommonDto<?> response = likeService.likeQna(qnaId, userDetails.getUser());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/aparts/like")
+    public ResponseEntity<?> getFavoriteAparts(@RequestParam(defaultValue = "1") int page,
+                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        CommonDto<?> response = likeService.getFavroiteAparts(page-1, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
