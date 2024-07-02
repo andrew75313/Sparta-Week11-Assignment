@@ -1,13 +1,11 @@
 package com.sparta.realestatefeed.service;
 
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.ApartRequestDto;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
-import com.sparta.realestatefeed.entity.Apart;
-import com.sparta.realestatefeed.entity.QApart;
-import com.sparta.realestatefeed.entity.User;
-import com.sparta.realestatefeed.entity.UserRoleEnum;
+import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.ApartRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -45,9 +43,20 @@ public class ApartService {
 
     public CommonDto<ApartResponseDto> getApart(Long id) {
 
+        QLike Like = QLike.like;
+
         Apart apart = apartRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유효하지 않은 아파트 ID입니다."));
+
         ApartResponseDto responseDto = new ApartResponseDto(apart);
+
+        Long likesCount = jpaQueryFactory.select(Wildcard.count)
+                .from(Like)
+                .where(Like.apart.id.eq(apart.getId()))
+                .fetchOne();
+
+        responseDto.updateLikesCount(likesCount);
+
         return new CommonDto<>(HttpStatus.OK.value(), "아파트 조회에 성공하였습니다.", responseDto);
     }
 
