@@ -28,7 +28,6 @@ public class Like extends Timestamped{
     private QnA qna;
 
     public Like(User user, Apart apart, QnA qna) {
-
         this.user = user;
         this.apart = apart;
         this.qna = qna;
