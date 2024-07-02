@@ -1,5 +1,6 @@
 package com.sparta.realestatefeed.service;
 
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.dto.QnARequestDto;
@@ -57,10 +58,19 @@ public class QnAService {
 
     public CommonDto<QnAResponseDto> select(Long qnaId) {
 
+        QLike Like = QLike.like;
+
         QnA qna = qnARepository.findById(qnaId)
                 .orElseThrow(() -> new NoSuchElementException("요청하신 댓글이 존재하지 않습니다."));
 
         QnAResponseDto responseDto = new QnAResponseDto(qna);
+
+        Long likesCount = jpaQueryFactory.select(Wildcard.count)
+                .from(Like)
+                .where(Like.qna.qnaId.eq(qna.getQnaId()))
+                .fetchOne();
+
+        responseDto.updateLikesCount(likesCount);
 
         CommonDto<QnAResponseDto> commonDto = new CommonDto<QnAResponseDto>(HttpStatus.OK.value(), "문의 조회에 성공하셨습니다.", responseDto);
 
