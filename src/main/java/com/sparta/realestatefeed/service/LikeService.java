@@ -44,7 +44,7 @@ public class LikeService {
         }
 
         Like foundLike = jpaQueryFactory.selectFrom(Like)
-                .where(Like.apart.id.eq(apartId))
+                .where(Like.apart.id.eq(apartId).and(Like.user.userName.eq(user.getUserName())))
                 .fetchOne();
 
         if (foundLike == null) {
@@ -84,7 +84,7 @@ public class LikeService {
         }
 
         Like foundLike = jpaQueryFactory.selectFrom(Like)
-                .where(Like.qna.qnaId.eq(qnaId))
+                .where(Like.qna.qnaId.eq(qnaId).and(Like.user.userName.eq(user.getUserName())))
                 .fetchOne();
 
         if (foundLike == null) {
