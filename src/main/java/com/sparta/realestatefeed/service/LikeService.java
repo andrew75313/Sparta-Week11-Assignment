@@ -57,4 +57,44 @@ public class LikeService {
 
         return new CommonDto<>(HttpStatus.OK.value(), message, null);
     }
+
+    public CommonDto<?> likeQna(Long qnaId, User user) {
+
+        QLike Like = QLike.like;
+        QUser User = QUser.user;
+        QQnA Qna = QQnA.qnA;
+
+        String message = "좋아요를 추가 했습니다.";
+
+        QnA foundQna = jpaQueryFactory.selectFrom(Qna)
+                .where(Qna.qnaId.eq(qnaId))
+                .fetchOne();
+
+        if (foundQna == null) {
+            throw new NoSuchElementException("해당 문의는 존재하지 않습니다.");
+        }
+
+        User writer = jpaQueryFactory.selectFrom(Qna)
+                .innerJoin(Qna.user, User).fetchJoin()
+                .where(Qna.qnaId.eq(qnaId))
+                .fetchOne().getUser();
+
+        if (writer.getUserName().equals(user.getUserName())) {
+            throw new UserAlreadyExistsException("본인의 문의글에 좋아요를 누를 수 없습니다.");
+        }
+
+        Like foundLike = jpaQueryFactory.selectFrom(Like)
+                .where(Like.qna.qnaId.eq(qnaId))
+                .fetchOne();
+
+        if (foundLike == null) {
+            likeRepository.save(new Like(user, null, foundQna));
+        } else {
+            message = "좋아요를 삭제했습니다.";
+
+            likeRepository.delete(foundLike);
+        }
+
+        return new CommonDto<>(HttpStatus.OK.value(), message, null);
+    }
 }

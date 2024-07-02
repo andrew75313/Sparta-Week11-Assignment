@@ -27,4 +27,13 @@ public class LikeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PostMapping("/aparts/{apartId}/qna/{qnaId}/like")
+    public ResponseEntity<?> likeQna(@PathVariable("qnaId") Long qnaId,
+                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        CommonDto<?> response = likeService.likeQna(qnaId, userDetails.getUser());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
