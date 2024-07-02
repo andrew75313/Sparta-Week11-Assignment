@@ -43,7 +43,7 @@ public class ApartService {
 
     public CommonDto<ApartResponseDto> getApart(Long id) {
 
-        QLike Like = QLike.like;
+        QLike qLike = QLike.like;
 
         Apart apart = apartRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유효하지 않은 아파트 ID입니다."));
@@ -51,8 +51,8 @@ public class ApartService {
         ApartResponseDto responseDto = new ApartResponseDto(apart);
 
         Long likesCount = jpaQueryFactory.select(Wildcard.count)
-                .from(Like)
-                .where(Like.apart.id.eq(apart.getId()))
+                .from(qLike)
+                .where(qLike.apart.id.eq(apart.getId()))
                 .fetchOne();
 
         responseDto.updateLikesCount(likesCount);

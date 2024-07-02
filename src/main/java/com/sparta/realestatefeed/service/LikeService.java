@@ -20,31 +20,31 @@ public class LikeService {
 
     public CommonDto<String> likeApart(Long apartId, User user) {
 
-        QLike Like = QLike.like;
-        QUser User = QUser.user;
-        QApart Apart = QApart.apart;
+        QLike qLike = QLike.like;
+        QUser qUser = QUser.user;
+        QApart qApart = QApart.apart;
 
         String message = "좋아요를 추가 했습니다.";
 
-        Apart foundApart = jpaQueryFactory.selectFrom(Apart)
-                .where(Apart.id.eq(apartId))
+        Apart foundApart = jpaQueryFactory.selectFrom(qApart)
+                .where(qApart.id.eq(apartId))
                 .fetchOne();
 
         if (foundApart == null) {
             throw new NoSuchElementException("해당 아파트는 존재하지 않습니다.");
         }
 
-        User writer = jpaQueryFactory.selectFrom(Apart)
-                .innerJoin(Apart.user, User).fetchJoin()
-                .where(Apart.id.eq(apartId))
+        User writer = jpaQueryFactory.selectFrom(qApart)
+                .innerJoin(qApart.user, qUser).fetchJoin()
+                .where(qApart.id.eq(apartId))
                 .fetchOne().getUser();
 
         if (writer.getUserName().equals(user.getUserName())) {
             throw new UserAlreadyExistsException("본인의 글에 좋아요를 누를 수 없습니다.");
         }
 
-        Like foundLike = jpaQueryFactory.selectFrom(Like)
-                .where(Like.apart.id.eq(apartId).and(Like.user.userName.eq(user.getUserName())))
+        Like foundLike = jpaQueryFactory.selectFrom(qLike)
+                .where(qLike.apart.id.eq(apartId).and(qLike.user.userName.eq(user.getUserName())))
                 .fetchOne();
 
         if (foundLike == null) {
@@ -60,31 +60,31 @@ public class LikeService {
 
     public CommonDto<?> likeQna(Long qnaId, User user) {
 
-        QLike Like = QLike.like;
-        QUser User = QUser.user;
-        QQnA Qna = QQnA.qnA;
+        QLike qLike = QLike.like;
+        QUser qUser = QUser.user;
+        QQnA qQna = QQnA.qnA;
 
         String message = "좋아요를 추가 했습니다.";
 
-        QnA foundQna = jpaQueryFactory.selectFrom(Qna)
-                .where(Qna.qnaId.eq(qnaId))
+        QnA foundQna = jpaQueryFactory.selectFrom(qQna)
+                .where(qQna.qnaId.eq(qnaId))
                 .fetchOne();
 
         if (foundQna == null) {
             throw new NoSuchElementException("해당 문의는 존재하지 않습니다.");
         }
 
-        User writer = jpaQueryFactory.selectFrom(Qna)
-                .innerJoin(Qna.user, User).fetchJoin()
-                .where(Qna.qnaId.eq(qnaId))
+        User writer = jpaQueryFactory.selectFrom(qQna)
+                .innerJoin(qQna.user, qUser).fetchJoin()
+                .where(qQna.qnaId.eq(qnaId))
                 .fetchOne().getUser();
 
         if (writer.getUserName().equals(user.getUserName())) {
             throw new UserAlreadyExistsException("본인의 문의글에 좋아요를 누를 수 없습니다.");
         }
 
-        Like foundLike = jpaQueryFactory.selectFrom(Like)
-                .where(Like.qna.qnaId.eq(qnaId).and(Like.user.userName.eq(user.getUserName())))
+        Like foundLike = jpaQueryFactory.selectFrom(qLike)
+                .where(qLike.qna.qnaId.eq(qnaId).and(qLike.user.userName.eq(user.getUserName())))
                 .fetchOne();
 
         if (foundLike == null) {

@@ -8,12 +8,7 @@ import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.ApartRepository;
 import com.sparta.realestatefeed.repository.QnARepository;
-import com.sparta.realestatefeed.repository.UserRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +53,7 @@ public class QnAService {
 
     public CommonDto<QnAResponseDto> select(Long qnaId) {
 
-        QLike Like = QLike.like;
+        QLike qLike = QLike.like;
 
         QnA qna = qnARepository.findById(qnaId)
                 .orElseThrow(() -> new NoSuchElementException("요청하신 댓글이 존재하지 않습니다."));
@@ -66,8 +61,8 @@ public class QnAService {
         QnAResponseDto responseDto = new QnAResponseDto(qna);
 
         Long likesCount = jpaQueryFactory.select(Wildcard.count)
-                .from(Like)
-                .where(Like.qna.qnaId.eq(qna.getQnaId()))
+                .from(qLike)
+                .where(qLike.qna.qnaId.eq(qna.getQnaId()))
                 .fetchOne();
 
         responseDto.updateLikesCount(likesCount);
