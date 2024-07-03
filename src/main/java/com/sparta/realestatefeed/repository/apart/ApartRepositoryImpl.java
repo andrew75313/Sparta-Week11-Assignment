@@ -7,6 +7,7 @@ import com.sparta.realestatefeed.entity.QUser;
 import com.sparta.realestatefeed.entity.User;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -36,5 +37,22 @@ public class ApartRepositoryImpl implements ApartJpaRepository {
                 .fetchOne().getUser();
 
         return user;
+    }
+
+    @Override
+    public List<Apart> findByAreaDateDescendingPaginated(String area, int page) {
+
+        var query = jpaQueryFactory.selectFrom(qApart)
+                .orderBy(qApart.createdAt.desc());
+
+        if (area != null) {
+            query.where(qApart.area.eq(area));
+        }
+
+        List<Apart> apartList = query.offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        return apartList;
     }
 }

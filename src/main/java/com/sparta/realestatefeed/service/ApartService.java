@@ -58,18 +58,7 @@ public class ApartService {
 
     public CommonDto<List<ApartResponseDto>> getAparts(String area, int page) {
 
-        QApart qApart = QApart.apart;
-
-        var query = jpaQueryFactory.selectFrom(qApart)
-                .orderBy(qApart.createdAt.desc());
-
-        if (area != null) {
-            query.where(qApart.area.eq(area));
-        }
-
-        List<Apart> apartList = query.offset(page * 5)
-                .limit(5)
-                .fetch();
+        List<Apart> apartList = apartRepository.findByAreaDateDescendingPaginated(area, page);
 
         List<ApartResponseDto> apartResponseDtoList = apartList.stream()
                 .map(ApartResponseDto::new)
