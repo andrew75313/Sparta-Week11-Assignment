@@ -1,7 +1,7 @@
 package com.sparta.realestatefeed.security;
 
 import com.sparta.realestatefeed.entity.User;
-import com.sparta.realestatefeed.repository.UserRepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

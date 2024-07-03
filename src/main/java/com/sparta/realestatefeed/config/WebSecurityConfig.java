@@ -1,7 +1,7 @@
 package com.sparta.realestatefeed.config;
 
 import com.sparta.realestatefeed.repository.RefreshTokenRepository;
-import com.sparta.realestatefeed.repository.UserRepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import com.sparta.realestatefeed.security.JwtAuthenticationFilter;
 import com.sparta.realestatefeed.security.JwtAuthorizationFilter;
 import com.sparta.realestatefeed.security.JwtUtil;

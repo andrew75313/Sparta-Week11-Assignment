@@ -6,7 +6,7 @@ import com.sparta.realestatefeed.dto.ApartRequestDto;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.entity.*;
-import com.sparta.realestatefeed.repository.ApartRepository;
+import com.sparta.realestatefeed.repository.apart.ApartRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

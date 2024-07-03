@@ -4,14 +4,11 @@ import com.sparta.realestatefeed.dto.UserRegisterRequestDto;
 import com.sparta.realestatefeed.dto.UserRegisterResponseDto;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.exception.UserAlreadyExistsException;
-import com.sparta.realestatefeed.exception.UserNotFoundException;
-import com.sparta.realestatefeed.repository.UserRepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.sql.Ref;
-import java.sql.Timestamp;
 import java.util.InputMismatchException;
 
 @Service

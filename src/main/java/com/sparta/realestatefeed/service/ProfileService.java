@@ -7,7 +7,7 @@ import com.sparta.realestatefeed.dto.ProfileRequestDto;
 import com.sparta.realestatefeed.dto.ProfileResponseDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.exception.PasswordMismatchException;
-import com.sparta.realestatefeed.repository.UserRepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

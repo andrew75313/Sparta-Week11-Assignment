@@ -1,13 +1,11 @@
 package com.sparta.realestatefeed.service;
 
 import com.sparta.realestatefeed.config.JwtConfig;
-import com.sparta.realestatefeed.dto.CommonDto;
-import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.RefreshToken;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.exception.UserNotFoundException;
 import com.sparta.realestatefeed.repository.RefreshTokenRepository;
-import com.sparta.realestatefeed.repository.UserRepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import com.sparta.realestatefeed.security.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;

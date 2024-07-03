@@ -2,7 +2,7 @@ package com.sparta.realestatefeed.security;
 
 import com.sparta.realestatefeed.config.JwtConfig;
 import com.sparta.realestatefeed.entity.UserRoleEnum;
-import com.sparta.realestatefeed.repository.UserRepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

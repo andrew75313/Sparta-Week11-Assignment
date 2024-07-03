@@ -1,7 +1,7 @@
 package com.sparta.realestatefeed.service;
 
 import com.sparta.realestatefeed.entity.User;
-import com.sparta.realestatefeed.repository.UserRepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import com.sparta.realestatefeed.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
