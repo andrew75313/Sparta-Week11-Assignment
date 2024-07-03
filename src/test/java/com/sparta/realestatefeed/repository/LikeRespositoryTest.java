@@ -67,7 +67,7 @@ public class LikeRespositoryTest {
 
         @Test
         @DisplayName("좋아요가 있을 경우")
-        void testFindByApartIdAndUser() {
+        void testFindByApartIdAndUserSucess() {
             // give
             user = setTestUser("testuser");
             userRepository.save(user);
@@ -75,7 +75,6 @@ public class LikeRespositoryTest {
             apartRepository.save(apart);
 
             like = new Like(user, apart, null);
-
             likeRepository.save(like);
 
             // when
@@ -89,7 +88,7 @@ public class LikeRespositoryTest {
 
         @Test
         @DisplayName("좋아요가 없을 경우")
-        void testFindByApartIdAndUserFail() {
+        void testFindByApartIdAndUserFailure() {
             // give
             user = setTestUser("testuser");
             userRepository.save(user);
@@ -101,4 +100,7 @@ public class LikeRespositoryTest {
             assertFalse(optionalLike.isPresent());
         }
     }
+
+
+
 }
