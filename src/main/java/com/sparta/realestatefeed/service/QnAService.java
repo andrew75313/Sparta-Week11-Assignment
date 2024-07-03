@@ -1,13 +1,14 @@
 package com.sparta.realestatefeed.service;
 
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.dto.QnARequestDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
+import com.sparta.realestatefeed.repository.like.LikeRepository;
 import com.sparta.realestatefeed.repository.qna.QnARepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -17,17 +18,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
 public class QnAService {
 
-    private QnARepository qnARepository;
-    private ApartRepository apartRepository;
-    private JPAQueryFactory jpaQueryFactory;
-
-    public QnAService(QnARepository qnARepository, ApartRepository apartRepository, JPAQueryFactory jpaQueryFactory) {
-        this.qnARepository = qnARepository;
-        this.apartRepository = apartRepository;
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
+    private final QnARepository qnARepository;
+    private final ApartRepository apartRepository;
+    private final LikeRepository likeRepository;
+    private final JPAQueryFactory jpaQueryFactory;
 
     @Transactional
     public CommonDto<QnAResponseDto> create(Long apartId, QnARequestDto qnARequestDto, User user) {
@@ -60,10 +57,7 @@ public class QnAService {
 
         QnAResponseDto responseDto = new QnAResponseDto(qna);
 
-        Long likesCount = jpaQueryFactory.select(Wildcard.count)
-                .from(qLike)
-                .where(qLike.qna.qnaId.eq(qna.getQnaId()))
-                .fetchOne();
+        Long likesCount = likeRepository.countQnaLikes(qnaId);
 
         responseDto.updateLikesCount(likesCount);
 

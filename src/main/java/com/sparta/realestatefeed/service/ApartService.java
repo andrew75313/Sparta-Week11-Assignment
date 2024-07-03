@@ -1,11 +1,13 @@
 package com.sparta.realestatefeed.service;
 
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.ApartRequestDto;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
-import com.sparta.realestatefeed.entity.*;
+import com.sparta.realestatefeed.entity.Apart;
+import com.sparta.realestatefeed.entity.QApart;
+import com.sparta.realestatefeed.entity.User;
+import com.sparta.realestatefeed.entity.UserRoleEnum;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
 import com.sparta.realestatefeed.repository.like.LikeRepository;
 import jakarta.transaction.Transactional;
