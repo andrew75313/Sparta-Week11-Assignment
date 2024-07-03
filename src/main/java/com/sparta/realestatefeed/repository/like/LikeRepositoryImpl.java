@@ -24,4 +24,16 @@ public class LikeRepositoryImpl implements LikeJpaRepository{
 
         return Optional.ofNullable(like);
     }
+
+    @Override
+    public Optional<Like> findByQnaIdAndUser(Long qnaId, User user){
+
+        Like like = jpaQueryFactory.selectFrom(qLike)
+                .where(qLike.qna.qnaId.eq(qnaId).and(qLike.user.userName.eq(user.getUserName())))
+                .fetchOne();
+
+        return Optional.ofNullable(like);
+    }
+
+
 }

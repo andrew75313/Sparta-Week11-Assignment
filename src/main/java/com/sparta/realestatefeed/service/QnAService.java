@@ -7,7 +7,7 @@ import com.sparta.realestatefeed.dto.QnARequestDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
-import com.sparta.realestatefeed.repository.QnARepository;
+import com.sparta.realestatefeed.repository.qna.QnARepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

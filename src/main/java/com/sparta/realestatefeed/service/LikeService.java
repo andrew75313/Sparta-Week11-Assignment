@@ -7,9 +7,9 @@ import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.exception.UserAlreadyExistsException;
+import com.sparta.realestatefeed.repository.qna.QnARepository;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
 import com.sparta.realestatefeed.repository.like.LikeRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import java.util.Optional;
 public class LikeService {
 
     private final ApartRepository apartRepository;
+    private final QnARepository qnARepository;
     private final LikeRepository likeRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -55,39 +56,26 @@ public class LikeService {
 
     public CommonDto<?> likeQna(Long qnaId, User user) {
 
-        QLike qLike = QLike.like;
-        QUser qUser = QUser.user;
-        QQnA qQna = QQnA.qnA;
-
         String message = "좋아요를 추가 했습니다.";
 
-        QnA foundQna = jpaQueryFactory.selectFrom(qQna)
-                .where(qQna.qnaId.eq(qnaId))
-                .fetchOne();
+        QnA foundQna = qnARepository.findByQnaId(qnaId).orElseThrow(
+                () -> new NoSuchElementException("해당 문의는 존재하지 않습니다.")
+        );
 
-        if (foundQna == null) {
-            throw new NoSuchElementException("해당 문의는 존재하지 않습니다.");
-        }
-
-        User writer = jpaQueryFactory.selectFrom(qQna)
-                .innerJoin(qQna.user, qUser).fetchJoin()
-                .where(qQna.qnaId.eq(qnaId))
-                .fetchOne().getUser();
+        User writer = qnARepository.findWriter(qnaId);
 
         if (writer.getUserName().equals(user.getUserName())) {
             throw new UserAlreadyExistsException("본인의 문의글에 좋아요를 누를 수 없습니다.");
         }
 
-        Like foundLike = jpaQueryFactory.selectFrom(qLike)
-                .where(qLike.qna.qnaId.eq(qnaId).and(qLike.user.userName.eq(user.getUserName())))
-                .fetchOne();
+        Optional<Like> optionalLike = likeRepository.findByQnaIdAndUser(qnaId, user);
 
-        if (foundLike == null) {
-            likeRepository.save(new Like(user, null, foundQna));
-        } else {
+        if (optionalLike.isPresent()) {
+            Like foundLike = optionalLike.get();
             message = "좋아요를 삭제했습니다.";
-
             likeRepository.delete(foundLike);
+        } else {
+            likeRepository.save(new Like(user, null, foundQna));
         }
 
         return new CommonDto<>(HttpStatus.OK.value(), message, null);

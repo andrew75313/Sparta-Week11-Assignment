@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
-import static com.sparta.realestatefeed.entity.QUser.user;
-
 @RequiredArgsConstructor
 public class ApartRepositoryImpl implements ApartJpaRepository {
 
