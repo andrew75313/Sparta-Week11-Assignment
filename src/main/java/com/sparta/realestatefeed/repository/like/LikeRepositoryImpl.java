@@ -15,6 +15,7 @@ public class LikeRepositoryImpl implements LikeJpaRepository {
 
     private final QLike qLike = QLike.like;
     private final QApart qApart = QApart.apart;
+    private final QQnA qQna = QQnA.qnA;
     private final QUser qUser = QUser.user;
 
     @Override
@@ -67,6 +68,21 @@ public class LikeRepositoryImpl implements LikeJpaRepository {
                 .innerJoin(qLike.user, qUser).fetchJoin()
                 .where(qUser.userName.eq(user.getUserName()))
                 .orderBy(qLike.apart.createdAt.desc())
+                .offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        return likeList;
+    }
+
+    @Override
+    public List<Like> findQnaLikesPaginated(int page, User user) {
+
+        List<Like> likeList = jpaQueryFactory.selectFrom(qLike)
+                .innerJoin(qLike.qna, qQna).fetchJoin()
+                .innerJoin(qLike.user, qUser).fetchJoin()
+                .where(qUser.userName.eq(user.getUserName()))
+                .orderBy(qLike.qna.createdAt.desc())
                 .offset(page * 5)
                 .limit(5)
                 .fetch();

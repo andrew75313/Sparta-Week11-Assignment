@@ -1,15 +1,16 @@
 package com.sparta.realestatefeed.service;
 
-import com.querydsl.core.types.dsl.Wildcard;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.dto.QnAResponseDto;
-import com.sparta.realestatefeed.entity.*;
+import com.sparta.realestatefeed.entity.Apart;
+import com.sparta.realestatefeed.entity.Like;
+import com.sparta.realestatefeed.entity.QnA;
+import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.exception.UserAlreadyExistsException;
-import com.sparta.realestatefeed.repository.qna.QnARepository;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
 import com.sparta.realestatefeed.repository.like.LikeRepository;
+import com.sparta.realestatefeed.repository.qna.QnARepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,6 @@ public class LikeService {
     private final ApartRepository apartRepository;
     private final QnARepository qnARepository;
     private final LikeRepository likeRepository;
-    private final JPAQueryFactory jpaQueryFactory;
 
     public CommonDto<String> likeApart(Long apartId, User user) {
 
@@ -98,18 +98,7 @@ public class LikeService {
 
     public CommonDto<?> getFavoriteQnas(int page, User user) {
 
-        QLike qLike = QLike.like;
-        QUser qUser = QUser.user;
-        QQnA qQna = QQnA.qnA;
-
-        List<Like> likeList = jpaQueryFactory.selectFrom(qLike)
-                .innerJoin(qLike.qna, qQna).fetchJoin()
-                .innerJoin(qLike.user, qUser).fetchJoin()
-                .where(qUser.userName.eq(user.getUserName()))
-                .orderBy(qLike.qna.createdAt.desc())
-                .offset(page * 5)
-                .limit(5)
-                .fetch();
+        List<Like> likeList = likeRepository.findQnaLikesPaginated(page, user);
 
         if (likeList.isEmpty()) {
             throw new NoSuchElementException("좋아요한 문의글이 없습니다.");
@@ -121,10 +110,7 @@ public class LikeService {
 
         for (QnAResponseDto qnAResponseDto : responseDtoList) {
 
-            Long likesCount = jpaQueryFactory.select(Wildcard.count)
-                    .from(qLike)
-                    .where(qLike.qna.qnaId.eq(qnAResponseDto.getQnaId()))
-                    .fetchOne();
+            Long likesCount = likeRepository.countQnaLikes(qnAResponseDto.getQnaId());
 
             qnAResponseDto.updateLikesCount(likesCount);
         }
