@@ -89,4 +89,28 @@ public class LikeRepositoryImpl implements LikeJpaRepository {
 
         return likeList;
     }
+
+    @Override
+    public Long countApartLikesByUser(User user) {
+
+        Long likesCount = jpaQueryFactory.select(Wildcard.count)
+                .from(qLike)
+                .where(qLike.user.id.eq(user.getId())
+                        .and(qLike.apart.isNotNull()))
+                .fetchOne();
+
+        return likesCount;
+    }
+
+    @Override
+    public Long countQnaLikesByUser(User user) {
+
+        Long likesCount = jpaQueryFactory.select(Wildcard.count)
+                .from(qLike)
+                .where(qLike.user.id.eq(user.getId())
+                        .and(qLike.qna.isNotNull()))
+                .fetchOne();
+
+        return likesCount;
+    }
 }

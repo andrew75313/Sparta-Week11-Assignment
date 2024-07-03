@@ -1,13 +1,13 @@
 package com.sparta.realestatefeed.service;
 
-import com.querydsl.core.types.dsl.Wildcard;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.dto.PasswordRequestDto;
 import com.sparta.realestatefeed.dto.ProfileRequestDto;
 import com.sparta.realestatefeed.dto.ProfileResponseDto;
-import com.sparta.realestatefeed.entity.*;
+import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.exception.PasswordMismatchException;
+import com.sparta.realestatefeed.repository.like.LikeRepository;
 import com.sparta.realestatefeed.repository.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -16,44 +16,23 @@ import java.util.List;
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class ProfileService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JPAQueryFactory jpaQueryFactory;
-
-    public ProfileService(UserRepository userRepository, PasswordEncoder passwordEncoder, JPAQueryFactory jpaQueryFactory) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
+    private final LikeRepository likeRepository;
 
     public ProfileResponseDto getUserProfile(String userName) {
 
-        QUser qUser = QUser.user;
-        QLike qLike = QLike.like;
-
-        User user = jpaQueryFactory.selectFrom(qUser)
-                .where(qUser.userName.eq(userName))
-                .fetchOne();
-
-        if (user == null) {
-            throw new IllegalArgumentException("해당 유저는 존재하지 않습니다.");
-        }
+        User user = userRepository.findByUserName(userName).orElseThrow(
+                () -> new IllegalArgumentException("해당 유저는 존재하지 않습니다.")
+        );
 
         ProfileResponseDto profileResponseDto = new ProfileResponseDto(user);
 
-        Long aptLikesCount = jpaQueryFactory.select(Wildcard.count)
-                .from(qLike)
-                .where(qLike.user.id.eq(user.getId())
-                        .and(qLike.apart.isNotNull()))
-                .fetchOne();
-
-        Long qnaLikesCount = jpaQueryFactory.select(Wildcard.count)
-                .from(qLike)
-                .where(qLike.user.id.eq(user.getId())
-                        .and(qLike.qna.isNotNull()))
-                .fetchOne();
+        Long aptLikesCount = likeRepository.countApartLikesByUser(user);
+        Long qnaLikesCount = likeRepository.countQnaLikesByUser(user);
 
         profileResponseDto.updateCounts(aptLikesCount, qnaLikesCount);
 

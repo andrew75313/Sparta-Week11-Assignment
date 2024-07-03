@@ -14,4 +14,6 @@ public interface LikeJpaRepository {
     Long countQnaLikes(Long qnaId);
     List<Like> findApartLikesPaginated(int page, User user);
     List<Like> findQnaLikesPaginated(int page, User user);
+    Long countApartLikesByUser(User user);
+    Long countQnaLikesByUser(User user);
 }
