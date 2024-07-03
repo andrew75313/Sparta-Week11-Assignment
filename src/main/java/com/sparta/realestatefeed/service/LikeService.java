@@ -83,18 +83,7 @@ public class LikeService {
 
     public CommonDto<?> getFavroiteAparts(int page, User user) {
 
-        QLike qLike = QLike.like;
-        QUser qUser = QUser.user;
-        QApart qApart = QApart.apart;
-
-        List<Like> likeList = jpaQueryFactory.selectFrom(qLike)
-                .innerJoin(qLike.apart, qApart).fetchJoin()
-                .innerJoin(qLike.user, qUser).fetchJoin()
-                .where(qUser.userName.eq(user.getUserName()))
-                .orderBy(qLike.apart.createdAt.desc())
-                .offset(page * 5)
-                .limit(5)
-                .fetch();
+        List<Like> likeList = likeRepository.findApartLikesPaginated(page, user);
 
         if (likeList.isEmpty()) {
             throw new NoSuchElementException("좋아요한 아파트 판매글이 없습니다.");

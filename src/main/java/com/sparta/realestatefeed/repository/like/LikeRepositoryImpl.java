@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.entity.*;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -56,5 +57,20 @@ public class LikeRepositoryImpl implements LikeJpaRepository {
                 .fetchOne();
 
         return likesCount;
+    }
+
+    @Override
+    public List<Like> findApartLikesPaginated(int page, User user) {
+
+        List<Like> likeList = jpaQueryFactory.selectFrom(qLike)
+                .innerJoin(qLike.apart, qApart).fetchJoin()
+                .innerJoin(qLike.user, qUser).fetchJoin()
+                .where(qUser.userName.eq(user.getUserName()))
+                .orderBy(qLike.apart.createdAt.desc())
+                .offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        return likeList;
     }
 }
