@@ -9,4 +9,5 @@ public interface LikeJpaRepository {
 
     Optional<Like> findByApartIdAndUser(Long apartId, User user);
     Optional<Like> findByQnaIdAndUser(Long qnaId, User user);
+    Long countApartLikes(Long apartId);
 }

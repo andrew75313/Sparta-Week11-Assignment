@@ -1,5 +1,6 @@
 package com.sparta.realestatefeed.repository.like;
 
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.entity.*;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class LikeRepositoryImpl implements LikeJpaRepository{
+public class LikeRepositoryImpl implements LikeJpaRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -16,7 +17,7 @@ public class LikeRepositoryImpl implements LikeJpaRepository{
     private final QUser qUser = QUser.user;
 
     @Override
-    public Optional<Like> findByApartIdAndUser(Long apartId, User user){
+    public Optional<Like> findByApartIdAndUser(Long apartId, User user) {
 
         Like like = jpaQueryFactory.selectFrom(qLike)
                 .where(qLike.apart.id.eq(apartId).and(qLike.user.userName.eq(user.getUserName())))
@@ -26,7 +27,7 @@ public class LikeRepositoryImpl implements LikeJpaRepository{
     }
 
     @Override
-    public Optional<Like> findByQnaIdAndUser(Long qnaId, User user){
+    public Optional<Like> findByQnaIdAndUser(Long qnaId, User user) {
 
         Like like = jpaQueryFactory.selectFrom(qLike)
                 .where(qLike.qna.qnaId.eq(qnaId).and(qLike.user.userName.eq(user.getUserName())))
@@ -35,5 +36,14 @@ public class LikeRepositoryImpl implements LikeJpaRepository{
         return Optional.ofNullable(like);
     }
 
+    @Override
+    public Long countApartLikes(Long apartId) {
 
+        Long likesCount = jpaQueryFactory.select(Wildcard.count)
+                .from(qLike)
+                .where(qLike.apart.id.eq(apartId))
+                .fetchOne();
+
+        return likesCount;
+    }
 }

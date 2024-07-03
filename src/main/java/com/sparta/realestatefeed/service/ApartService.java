@@ -7,7 +7,9 @@ import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
 import com.sparta.realestatefeed.entity.*;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
+import com.sparta.realestatefeed.repository.like.LikeRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +24,12 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class ApartService {
 
     private final ApartRepository apartRepository;
+    private final LikeRepository likeRepository;
     private final JPAQueryFactory jpaQueryFactory;
-
-    public ApartService(ApartRepository apartRepository, JPAQueryFactory jpaQueryFactory) {
-        this.apartRepository = apartRepository;
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
 
     @Transactional
     public CommonDto<ApartResponseDto> createApart(ApartRequestDto requestDto, User user) {
@@ -43,17 +42,12 @@ public class ApartService {
 
     public CommonDto<ApartResponseDto> getApart(Long id) {
 
-        QLike qLike = QLike.like;
-
         Apart apart = apartRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유효하지 않은 아파트 ID입니다."));
 
         ApartResponseDto responseDto = new ApartResponseDto(apart);
 
-        Long likesCount = jpaQueryFactory.select(Wildcard.count)
-                .from(qLike)
-                .where(qLike.apart.id.eq(apart.getId()))
-                .fetchOne();
+        Long likesCount = likeRepository.countApartLikes(id);
 
         responseDto.updateLikesCount(likesCount);
 
