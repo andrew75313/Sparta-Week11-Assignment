@@ -101,19 +101,11 @@ public class QnAService {
         }
 
         qnARepository.deleteById(qna.getQnaId());
-
     }
 
     public CommonDto<List<QnAResponseDto>> selectByApartId(Long apartId, int page) {
 
-        QQnA qQnA = QQnA.qnA;
-
-        List<QnA> qnaList = jpaQueryFactory.selectFrom(qQnA)
-                .where(qQnA.apart.id.eq(apartId))
-                .orderBy(qQnA.createdAt.desc())
-                .offset(page * 5)
-                .limit(5)
-                .fetch();
+        List<QnA> qnaList = qnARepository.findByApartIdDescendingPaginated(apartId, page);
 
         List<QnAResponseDto> qnAResponseDtoList = qnaList.stream()
                 .map(QnAResponseDto::new)

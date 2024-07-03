@@ -7,6 +7,7 @@ import com.sparta.realestatefeed.entity.QnA;
 import com.sparta.realestatefeed.entity.User;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -36,5 +37,18 @@ public class QnARepositoryImpl implements QnAJpaRepository {
                 .fetchOne().getUser();
 
         return user;
+    }
+
+    @Override
+    public List<QnA> findByApartIdDescendingPaginated(Long apartId, int page) {
+
+        List<QnA> qnaList = jpaQueryFactory.selectFrom(qQna)
+                .where(qQna.apart.id.eq(apartId))
+                .orderBy(qQna.createdAt.desc())
+                .offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        return qnaList;
     }
 }
