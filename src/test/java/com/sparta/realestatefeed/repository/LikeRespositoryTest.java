@@ -87,7 +87,7 @@ public class LikeRespositoryTest {
         @Test
         @DisplayName("좋아요가 있을 경우")
         void testFindByApartIdAndUserSucess() {
-            // give
+            // given
             user = setTestUser("testuser");
             userRepository.save(user);
 
@@ -108,7 +108,7 @@ public class LikeRespositoryTest {
         @Test
         @DisplayName("좋아요가 없을 경우")
         void testFindByApartIdAndUserFailure() {
-            // give
+            // given
             user = setTestUser("testuser");
             userRepository.save(user);
 
@@ -127,7 +127,7 @@ public class LikeRespositoryTest {
         @Test
         @DisplayName("좋아요가 있을 경우")
         void testFindByQnaIdAndUserSucess() {
-            // give
+            // given
             user = setTestUser("testuser");
             userRepository.save(user);
 
@@ -149,7 +149,7 @@ public class LikeRespositoryTest {
         @Test
         @DisplayName("좋아요가 없을 경우")
         void testFindByQnaIdAndUserFailure() {
-            // give
+            // given
             user = setTestUser("testuser");
             userRepository.save(user);
 
@@ -164,7 +164,7 @@ public class LikeRespositoryTest {
     @Test
     @DisplayName("특정 아파트 게시글의 좋아요 갯수 조회")
     void testCountApartLikes() {
-        // give
+        // given
         User testUser1 = setTestUser("testuser1");
         userRepository.save(testUser1);
 
@@ -190,7 +190,7 @@ public class LikeRespositoryTest {
     @Test
     @DisplayName("특정 문의 댓글의 좋아요 갯수 조회")
     void testCountQnaLikes() {
-        // give
+        // given
         User testUser1 = setTestUser("testuser1");
         userRepository.save(testUser1);
 
@@ -217,7 +217,7 @@ public class LikeRespositoryTest {
     @Test
     @DisplayName("사용자의 아파드 게시글에 대해 추가한 모든 좋아요 조회")
     void testFindApartLikesPaginated() {
-        // give
+        // given
         user = setTestUser("testuser");
         userRepository.save(user);
 
@@ -243,7 +243,7 @@ public class LikeRespositoryTest {
     @Test
     @DisplayName("사용자의 댓글 문의에 대해 추가한 모든 좋아요 조회")
     void testFindQnaLikesPaginated() {
-        // give
+        // given
         user = setTestUser("testuser");
         userRepository.save(user);
 
@@ -269,7 +269,7 @@ public class LikeRespositoryTest {
     @Test
     @DisplayName("사용자가 추가한 모든 아파트 게시글 좋아요 갯수 조회")
     void testCountApartLikesByUser() {
-        // give
+        // given
         user = setTestUser("testuser");
         userRepository.save(user);
 
@@ -289,7 +289,7 @@ public class LikeRespositoryTest {
     @Test
     @DisplayName("사용자가 추가한 모든 문의 댓글 좋아요 갯수 조회")
     void testCountQnaLikesByUser() {
-        // give
+        // given
         user = setTestUser("testuser");
         userRepository.save(user);
 

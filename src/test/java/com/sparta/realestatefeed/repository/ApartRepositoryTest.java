@@ -67,7 +67,7 @@ public class ApartRepositoryTest {
         @Test
         @DisplayName("특정 아파트가 존재할 경우")
         void testFindByApartIdSuccess() {
-            // give
+            // given
             apart = setTestApart("testapart");
             apartRepository.save(apart);
 
@@ -82,7 +82,7 @@ public class ApartRepositoryTest {
         @Test
         @DisplayName("특정 아파트가 없을 경우")
         void testFindByApartIdFailure() {
-            // give
+            // given
             apart = setTestApart("testapart");
             apartRepository.save(apart);
 
@@ -97,7 +97,7 @@ public class ApartRepositoryTest {
     @Test
     @DisplayName("특정 아파트 게시글 작성자 조회")
     void testFindWriter() {
-        // give
+        // given
         user = setTestUser("testuser");
         userRepository.save(user);
 
