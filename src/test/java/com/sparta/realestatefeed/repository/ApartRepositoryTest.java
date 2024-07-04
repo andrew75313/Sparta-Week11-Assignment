@@ -36,8 +36,6 @@ public class ApartRepositoryTest {
 
     private Apart apart;
     private User user;
-    @Autowired
-    private LikeRepository likeRepository;
 
     private Apart setTestApart(String apartName) {
 
