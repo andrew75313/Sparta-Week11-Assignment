@@ -1,9 +1,11 @@
 package com.sparta.realestatefeed.repository;
 
 import com.sparta.realestatefeed.config.TestConfig;
+import com.sparta.realestatefeed.entity.Apart;
 import com.sparta.realestatefeed.entity.QnA;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.entity.UserRoleEnum;
+import com.sparta.realestatefeed.repository.apart.ApartRepository;
 import com.sparta.realestatefeed.repository.qna.QnARepository;
 import com.sparta.realestatefeed.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +34,11 @@ public class QnARepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ApartRepository apartRepository;
+
     private QnA qna;
+    private Apart apart;
     private User user;
 
     private QnA setTestQna(String content) {
@@ -41,6 +48,14 @@ public class QnARepositoryTest {
         ReflectionTestUtils.setField(qna, "isCompleted", false);
 
         return qna;
+    }
+
+    private Apart setTestApart(String apartName) {
+
+        Apart apart = new Apart();
+        ReflectionTestUtils.setField(apart, "apartName", apartName);
+
+        return apart;
     }
 
     private User setTestUser(String userName) {
@@ -57,6 +72,7 @@ public class QnARepositoryTest {
     @BeforeEach
     void setUp() {
         qna = new QnA();
+        apart = new Apart();
         user = new User();
     }
 
@@ -112,4 +128,29 @@ public class QnARepositoryTest {
         assertEquals(user, writer);
     }
 
+    @Test
+    @DisplayName("특정 아파트의 전체 문의 댓글 조회")
+    void testFindByApartIdDescendingPaginated() {
+        // given
+        apart = setTestApart("testapart");
+        apartRepository.save(apart);
+
+        for (int index = 1; index <= 6; index++) {
+            qna = setTestQna("testcontents" + index);
+            ReflectionTestUtils.setField(qna, "apart", apart);
+            qnARepository.save(qna);
+        }
+
+        // when
+        List<QnA> qnAList = qnARepository.findByApartIdDescendingPaginated(apart.getId(), 0);
+
+        // then
+        assertFalse(qnAList.isEmpty());
+        assertEquals(5, qnAList.size());
+        assertEquals(apart.getId(), qnAList.get(0).getApart().getId());
+        assertEquals(apart.getId(), qnAList.get(1).getApart().getId());
+        assertEquals(apart.getId(), qnAList.get(2).getApart().getId());
+        assertEquals(apart.getId(), qnAList.get(3).getApart().getId());
+        assertEquals(apart.getId(), qnAList.get(4).getApart().getId());
+    }
 }
