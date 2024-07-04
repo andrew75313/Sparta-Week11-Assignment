@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,6 +96,69 @@ public class FollowRepositoryTest {
 
             // then
             assertFalse(optionalFollow.isPresent());
+        }
+    }
+
+    @Nested
+    @DisplayName("팔로워가 팔로잉한 모든 팔로우 조회")
+    class FindByFollowerAndFollowingUserNameTest {
+
+        @Test
+        @DisplayName("찾고자 하는 특정 팔로잉 사용자 이름이 없을 경우")
+        void testFindByFollowerAndFollowingUserNameWithinUserName() {
+            // given
+            User follower = setTestUser("follower");
+            userRepository.save(follower);
+
+            User following1 = setTestUser("following1");
+            userRepository.save(following1);
+
+            User following2 = setTestUser("following2");
+            userRepository.save(following2);
+
+            follow = new Follow(follower, following1);
+            followRepository.save(follow);
+
+            follow = new Follow(follower, following2);
+            followRepository.save(follow);
+
+            // when
+            List<Follow> followList = followRepository.findByFollowerAndFollowingUserName(follower, null);
+
+            // then
+            assertFalse(followList.isEmpty());
+            assertEquals(2, followList.size());
+            assertEquals(follower.getId(), followList.get(0).getFollower().getId());
+            assertEquals(follower.getId(), followList.get(1).getFollower().getId());
+        }
+
+        @Test
+        @DisplayName("찾고자 하는 특정 팔로잉 사용자 이름이 있을 경우")
+        void testFindByFollowerAndFollowingUserNameWithUserName() {
+            // given
+            User follower = setTestUser("follower");
+            userRepository.save(follower);
+
+            User following1 = setTestUser("following1");
+            userRepository.save(following1);
+
+            User following2 = setTestUser("following2");
+            userRepository.save(following2);
+
+            follow = new Follow(follower, following1);
+            followRepository.save(follow);
+
+            follow = new Follow(follower, following2);
+            followRepository.save(follow);
+
+            // when
+            List<Follow> followList = followRepository.findByFollowerAndFollowingUserName(follower, "following1");
+
+            // then
+            assertFalse(followList.isEmpty());
+            assertEquals(1, followList.size());
+            assertEquals(follower.getId(), followList.get(0).getFollower().getId());
+            assertEquals(following1.getId(), followList.get(0).getFollowing().getId());
         }
     }
 
