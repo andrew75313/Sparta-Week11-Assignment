@@ -285,4 +285,24 @@ public class LikeRespositoryTest {
         // then
         assertEquals(6L, likesCount);
     }
+
+    @Test
+    @DisplayName("사용자가 추가한 모든 문의 댓글 좋아요 갯수 조회")
+    void testCountQnaLikesByUser() {
+        // give
+        user = setTestUser("testuser");
+        userRepository.save(user);
+
+        for (int index = 1; index <= 6; index++) {
+            qna = setTestQna("testcontent" + index);
+            qnARepository.save(qna);
+            likeRepository.save(new Like(user, null, qna));
+        }
+
+        // when
+        Long likesCount = likeRepository.countQnaLikesByUser(user);
+
+        // then
+        assertEquals(6L, likesCount);
+    }
 }
