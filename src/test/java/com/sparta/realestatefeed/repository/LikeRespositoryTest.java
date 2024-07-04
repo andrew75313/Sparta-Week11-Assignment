@@ -55,6 +55,14 @@ public class LikeRespositoryTest {
         return user;
     }
 
+    private Apart setTestApart(String apartName) {
+
+        Apart apart = new Apart();
+        ReflectionTestUtils.setField(apart, "apartName", apartName);
+
+        return apart;
+    }
+
     private QnA setTestQna(String content) {
 
         QnA qna = new QnA();
@@ -205,5 +213,31 @@ public class LikeRespositoryTest {
 
         // then
         assertEquals(3L, countLikes);
+    }
+
+    @Test
+    @DisplayName("사용자의 아파드 게시글에 대해 추가한 모든 좋아요 조회")
+    void testFindApartLikesPaginated() {
+        // give
+        user = setTestUser("testuser");
+        userRepository.save(user);
+
+        for (int index = 1; index <= 6; index++) {
+            apart = setTestApart("testapart" + index);
+            apartRepository.save(apart);
+            likeRepository.save(new Like(user, apart, null));
+        }
+
+        // when
+        List<Like> likeList = likeRepository.findApartLikesPaginated(0, user);
+
+        // then
+        assertFalse(likeList.isEmpty());
+        assertEquals(5, likeList.size());
+        assertEquals(user.getId(), likeList.get(0).getUser().getId());
+        assertEquals(user.getId(), likeList.get(1).getUser().getId());
+        assertEquals(user.getId(), likeList.get(2).getUser().getId());
+        assertEquals(user.getId(), likeList.get(3).getUser().getId());
+        assertEquals(user.getId(), likeList.get(4).getUser().getId());
     }
 }
