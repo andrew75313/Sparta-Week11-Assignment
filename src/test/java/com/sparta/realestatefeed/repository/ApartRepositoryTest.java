@@ -5,7 +5,6 @@ import com.sparta.realestatefeed.entity.Apart;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.entity.UserRoleEnum;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
-import com.sparta.realestatefeed.repository.qna.QnARepository;
 import com.sparta.realestatefeed.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,5 +110,34 @@ public class ApartRepositoryTest {
 
         // then
         assertEquals(user, writer);
+    }
+
+    @Test
+    @DisplayName("지역별 아파트 게시글 조회")
+    void testFindByAreaDateDescendingPaginated() {
+        // given
+        for (int index = 1; index <= 6; index++) {
+            apart = setTestApart("seoulapart" + index);
+            ReflectionTestUtils.setField(apart, "area", "Seoul");
+            apartRepository.save(apart);
+        }
+
+        for (int index = 1; index <= 4; index++) {
+            apart = setTestApart("incheonapart" + index);
+            ReflectionTestUtils.setField(apart, "area", "Incheon");
+            apartRepository.save(apart);
+        }
+
+        // when
+        List<Apart> apartList = apartRepository.findByAreaDateDescendingPaginated("Seoul", 0);
+
+        // then
+        assertFalse(apartList.isEmpty());
+        assertEquals(5, apartList.size());
+        assertEquals(apartList.get(0).getArea(), "Seoul");
+        assertEquals(apartList.get(1).getArea(), "Seoul");
+        assertEquals(apartList.get(2).getArea(), "Seoul");
+        assertEquals(apartList.get(3).getArea(), "Seoul");
+        assertEquals(apartList.get(4).getArea(), "Seoul");
     }
 }
