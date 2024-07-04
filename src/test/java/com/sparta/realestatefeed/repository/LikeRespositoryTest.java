@@ -179,4 +179,31 @@ public class LikeRespositoryTest {
         // then
         assertEquals(3L, countLikes);
     }
+
+    @Test
+    @DisplayName("특정 문의 댓글의 좋아요 갯수 조회")
+    void testCountQnaLikes() {
+        // give
+        User testUser1 = setTestUser("testuser1");
+        userRepository.save(testUser1);
+
+        User testUser2 = setTestUser("testuser2");
+        userRepository.save(testUser2);
+
+        User testUser3 = setTestUser("testuser3");
+        userRepository.save(testUser3);
+
+        qna = setTestQna("test contents");
+        qnARepository.save(qna);
+
+        likeRepository.save(new Like(testUser1, null, qna));
+        likeRepository.save(new Like(testUser2, null, qna));
+        likeRepository.save(new Like(testUser3, null, qna));
+
+        // when
+        Long countLikes = likeRepository.countQnaLikes(qna.getQnaId());
+
+        // then
+        assertEquals(3L, countLikes);
+    }
 }
