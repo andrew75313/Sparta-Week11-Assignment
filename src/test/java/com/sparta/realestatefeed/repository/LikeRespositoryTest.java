@@ -181,10 +181,10 @@ public class LikeRespositoryTest {
         likeRepository.save(new Like(testUser3, apart, null));
 
         // when
-        Long countLikes = likeRepository.countApartLikes(apart.getId());
+        Long likesCount = likeRepository.countApartLikes(apart.getId());
 
         // then
-        assertEquals(3L, countLikes);
+        assertEquals(3L, likesCount);
     }
 
     @Test
@@ -208,10 +208,10 @@ public class LikeRespositoryTest {
         likeRepository.save(new Like(testUser3, null, qna));
 
         // when
-        Long countLikes = likeRepository.countQnaLikes(qna.getQnaId());
+        Long likesCount = likeRepository.countQnaLikes(qna.getQnaId());
 
         // then
-        assertEquals(3L, countLikes);
+        assertEquals(3L, likesCount);
     }
 
     @Test
@@ -264,5 +264,25 @@ public class LikeRespositoryTest {
         assertEquals(user.getId(), likeList.get(2).getUser().getId());
         assertEquals(user.getId(), likeList.get(3).getUser().getId());
         assertEquals(user.getId(), likeList.get(4).getUser().getId());
+    }
+
+    @Test
+    @DisplayName("사용자가 추가한 모든 아파트 게시글 좋아요 갯수 조회")
+    void testCountApartLikesByUser() {
+        // give
+        user = setTestUser("testuser");
+        userRepository.save(user);
+
+        for (int index = 1; index <= 6; index++) {
+            apart = setTestApart("testapart" + index);
+            apartRepository.save(apart);
+            likeRepository.save(new Like(user, apart, null));
+        }
+
+        // when
+        Long likesCount = likeRepository.countApartLikesByUser(user);
+
+        // then
+        assertEquals(6L, likesCount);
     }
 }
