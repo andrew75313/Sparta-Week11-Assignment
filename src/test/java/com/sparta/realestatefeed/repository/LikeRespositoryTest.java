@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -50,6 +51,15 @@ public class LikeRespositoryTest {
         user.setRole(UserRoleEnum.USER);
 
         return user;
+    }
+
+    private QnA setTestQna(String content) {
+
+        QnA qna = new QnA();
+        ReflectionTestUtils.setField(qna, "content", content);
+        ReflectionTestUtils.setField(qna, "isCompleted", false);
+
+        return qna;
     }
 
     @BeforeEach
@@ -94,13 +104,52 @@ public class LikeRespositoryTest {
             userRepository.save(user);
 
             // when
-            Optional<Like> optionalLike = likeRepository.findByApartIdAndUser(1L, user);
+            Optional<Like> optionalLike = likeRepository.findByApartIdAndUser(999L, user);
 
             // then
             assertFalse(optionalLike.isPresent());
         }
     }
 
+    @Nested
+    @DisplayName("특정 문의 댓글에 사용자가 추가한 좋아요 찾기")
+    class FindByQnaIdAndUserTest {
 
+        @Test
+        @DisplayName("좋아요가 있을 경우")
+        void testFindByQnaIdAndUserSucess() {
+            // give
+            user = setTestUser("testuser");
+            userRepository.save(user);
+
+            qna = setTestQna("test contents");
+            qnARepository.save(qna);
+
+            like = new Like(user, null, qna);
+            likeRepository.save(like);
+
+            // when
+            Optional<Like> optionalLike = likeRepository.findByQnaIdAndUser(qna.getQnaId(), user);
+
+            // then
+            assertTrue(optionalLike.isPresent());
+            assertEquals("testuser", optionalLike.get().getUser().getUserName());
+            assertEquals(qna.getQnaId(), optionalLike.get().getQna().getQnaId());
+        }
+
+        @Test
+        @DisplayName("좋아요가 없을 경우")
+        void testFindByQnaIdAndUserFailure() {
+            // give
+            user = setTestUser("testuser");
+            userRepository.save(user);
+
+            // when
+            Optional<Like> optionalLike = likeRepository.findByQnaIdAndUser(999L, user);
+
+            // then
+            assertFalse(optionalLike.isPresent());
+        }
+    }
 
 }
