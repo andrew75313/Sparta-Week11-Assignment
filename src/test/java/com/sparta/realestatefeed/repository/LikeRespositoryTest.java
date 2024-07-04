@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,7 +49,7 @@ public class LikeRespositoryTest {
         User user = new User();
         user.setUserName(userName);
         user.setPassword("password");
-        user.setEmail("test@email.com");
+        user.setEmail(userName + "@email.com");
         user.setRole(UserRoleEnum.USER);
 
         return user;
@@ -152,4 +154,29 @@ public class LikeRespositoryTest {
         }
     }
 
+    @Test
+    @DisplayName("특정 아파트 게시글의 좋아요 갯수 조회")
+    void testCountApartLikes() {
+        // give
+        User testUser1 = setTestUser("testuser1");
+        userRepository.save(testUser1);
+
+        User testUser2 = setTestUser("testuser2");
+        userRepository.save(testUser2);
+
+        User testUser3 = setTestUser("testuser3");
+        userRepository.save(testUser3);
+
+        apartRepository.save(apart);
+
+        likeRepository.save(new Like(testUser1, apart, null));
+        likeRepository.save(new Like(testUser2, apart, null));
+        likeRepository.save(new Like(testUser3, apart, null));
+
+        // when
+        Long countLikes = likeRepository.countApartLikes(apart.getId());
+
+        // then
+        assertEquals(3L, countLikes);
+    }
 }
