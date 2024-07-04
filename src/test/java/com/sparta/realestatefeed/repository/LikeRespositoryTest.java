@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -230,6 +229,32 @@ public class LikeRespositoryTest {
 
         // when
         List<Like> likeList = likeRepository.findApartLikesPaginated(0, user);
+
+        // then
+        assertFalse(likeList.isEmpty());
+        assertEquals(5, likeList.size());
+        assertEquals(user.getId(), likeList.get(0).getUser().getId());
+        assertEquals(user.getId(), likeList.get(1).getUser().getId());
+        assertEquals(user.getId(), likeList.get(2).getUser().getId());
+        assertEquals(user.getId(), likeList.get(3).getUser().getId());
+        assertEquals(user.getId(), likeList.get(4).getUser().getId());
+    }
+
+    @Test
+    @DisplayName("사용자의 댓글 문의에 대해 추가한 모든 좋아요 조회")
+    void testFindQnaLikesPaginated() {
+        // give
+        user = setTestUser("testuser");
+        userRepository.save(user);
+
+        for (int index = 1; index <= 6; index++) {
+            qna = setTestQna("testcontent" + index);
+            qnARepository.save(qna);
+            likeRepository.save(new Like(user, null, qna));
+        }
+
+        // when
+        List<Like> likeList = likeRepository.findQnaLikesPaginated(0, user);
 
         // then
         assertFalse(likeList.isEmpty());
