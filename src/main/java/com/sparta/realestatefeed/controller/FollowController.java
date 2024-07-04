@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,11 +16,20 @@ public class FollowController {
 
     private final FollowService followService;
 
-    @PostMapping("follow/{userId}/")
+    @PostMapping("/follow/{userId}")
     public ResponseEntity<?> followUser(@PathVariable("userId") Long userId,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         CommonDto<?> response = followService.followUser(userId, userDetails.getUser());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/followers/aparts")
+    public ResponseEntity<?> getFollowersAparts(@RequestParam(defaultValue = "1") int page,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        CommonDto<?> response = followService.getFollowersAparts(userDetails.getUser(), page - 1);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

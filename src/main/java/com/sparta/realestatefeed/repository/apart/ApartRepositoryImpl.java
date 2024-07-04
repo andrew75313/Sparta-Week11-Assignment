@@ -55,4 +55,17 @@ public class ApartRepositoryImpl implements ApartJpaRepository {
 
         return apartList;
     }
+
+    @Override
+    public List<Apart> findByFollowingUsers(List<Long> followingIdList, int page) {
+
+        List<Apart> apartList = jpaQueryFactory.selectFrom(qApart)
+                .where(qApart.user.id.in(followingIdList))
+                .orderBy(qApart.createdAt.desc())
+                .offset(page * 5)
+                .limit(5)
+                .fetch();
+
+        return apartList;
+    }
 }

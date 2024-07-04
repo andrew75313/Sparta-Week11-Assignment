@@ -11,4 +11,5 @@ public interface ApartJpaRepository {
     Optional<Apart> findByApartId(Long apartId);
     User findWriter(Long apartId);
     List<Apart> findByAreaDateDescendingPaginated(String area, int page);
+    List<Apart> findByFollowingUsers(List<Long> followingIdList, int page);
 }
