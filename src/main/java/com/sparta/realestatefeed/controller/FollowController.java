@@ -26,10 +26,11 @@ public class FollowController {
     }
 
     @GetMapping("/followers/aparts")
-    public ResponseEntity<?> getFollowersAparts(@RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<?> getFollowersAparts(@RequestParam(value = "username", required = false) String followingUserName,
+                                                @RequestParam(value = "page", defaultValue = "1") int page,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CommonDto<?> response = followService.getFollowersAparts(userDetails.getUser(), page - 1);
+        CommonDto<?> response = followService.getFollowersAparts(followingUserName, page - 1, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

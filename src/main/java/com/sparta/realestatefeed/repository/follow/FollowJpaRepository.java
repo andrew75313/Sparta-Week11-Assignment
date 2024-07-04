@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface FollowJpaRepository {
 
     Optional<Follow> findByFollowerAndFollowing(User user, User userToFollow);
-    List<Follow> findFollowingUserByFollower(User follower);
+    List<Follow> findByFollowerAndFollowingUserName(User follower, String followingUserName);
 }

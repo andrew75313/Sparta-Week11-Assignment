@@ -52,13 +52,13 @@ public class FollowService {
         return new CommonDto<>(HttpStatus.OK.value(), message, null);
     }
 
-    public CommonDto<?> getFollowersAparts(User user, int page) {
+    public CommonDto<?> getFollowersAparts(String followingUserName, int page, User user) {
 
         User follower = userRepository.findByUserName(user.getUserName()).orElseThrow(
                 () -> new UserNotFoundException("다시 로그인 해주세요.")
         );
 
-        List<Follow> followList = followRepository.findFollowingUserByFollower(follower);
+        List<Follow> followList = followRepository.findByFollowerAndFollowingUserName(follower, followingUserName);
 
         if (followList.isEmpty()) {
             return new CommonDto<>(HttpStatus.OK.value(), "팔로우한 사람이 없습니다.", null);

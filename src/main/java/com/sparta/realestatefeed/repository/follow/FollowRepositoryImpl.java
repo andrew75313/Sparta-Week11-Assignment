@@ -30,10 +30,16 @@ public class FollowRepositoryImpl implements FollowJpaRepository {
     }
 
     @Override
-    public List<Follow> findFollowingUserByFollower(User follower) {
+    public List<Follow> findByFollowerAndFollowingUserName(User follower, String followingUserName) {
+
+        var query = qFollow.follower.id.eq(follower.getId());
+
+        if (followingUserName != null) {
+            query = query.and(qFollow.following.userName.eq(followingUserName));
+        }
 
         List<Follow> followList = jpaQueryFactory.selectFrom(qFollow)
-                .where(qFollow.follower.id.eq(follower.getId()))
+                .where(query)
                 .fetch();
 
         return followList;
