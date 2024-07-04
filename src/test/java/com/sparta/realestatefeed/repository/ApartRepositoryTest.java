@@ -2,8 +2,11 @@ package com.sparta.realestatefeed.repository;
 
 import com.sparta.realestatefeed.config.TestConfig;
 import com.sparta.realestatefeed.entity.Apart;
+import com.sparta.realestatefeed.entity.User;
+import com.sparta.realestatefeed.entity.UserRoleEnum;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
 import com.sparta.realestatefeed.repository.qna.QnARepository;
+import com.sparta.realestatefeed.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,20 +29,35 @@ public class ApartRepositoryTest {
     @Autowired
     private ApartRepository apartRepository;
 
-    private Apart apart;
+    @Autowired
+    private UserRepository userRepository;
 
-    private Apart setTestApart(String apartName, String area) {
+    private Apart apart;
+    private User user;
+
+    private Apart setTestApart(String apartName) {
 
         Apart apart = new Apart();
         ReflectionTestUtils.setField(apart, "apartName", apartName);
-        ReflectionTestUtils.setField(apart, "area", area);
 
         return apart;
+    }
+
+    private User setTestUser(String userName) {
+
+        User user = new User();
+        user.setUserName(userName);
+        user.setPassword("password");
+        user.setEmail(userName + "@email.com");
+        user.setRole(UserRoleEnum.USER);
+
+        return user;
     }
 
     @BeforeEach
     void setUp() {
         apart = new Apart();
+        user = new User();
     }
 
     @Nested
@@ -50,7 +68,7 @@ public class ApartRepositoryTest {
         @DisplayName("특정 아파트가 존재할 경우")
         void testFindByApartIdSuccess() {
             // give
-            apart = setTestApart("testapart", "Seoul");
+            apart = setTestApart("testapart");
             apartRepository.save(apart);
 
             // when
@@ -65,7 +83,7 @@ public class ApartRepositoryTest {
         @DisplayName("특정 아파트가 없을 경우")
         void testFindByApartIdFailure() {
             // give
-            apart = setTestApart("testapart", "Seoul");
+            apart = setTestApart("testapart");
             apartRepository.save(apart);
 
             // when
@@ -74,5 +92,23 @@ public class ApartRepositoryTest {
             // then
             assertFalse(optionalApart.isPresent());
         }
+    }
+
+    @Test
+    @DisplayName("특정 아파트 게시글 작성자 조회")
+    void testFindWriter() {
+        // give
+        user = setTestUser("testuser");
+        userRepository.save(user);
+
+        apart = setTestApart("testapart");
+        ReflectionTestUtils.setField(apart, "user", user);
+        apartRepository.save(apart);
+
+        // when
+        User writer = apartRepository.findWriter(apart.getId());
+
+        // then
+        assertEquals(user, writer);
     }
 }
