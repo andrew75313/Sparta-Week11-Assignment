@@ -45,6 +45,13 @@ public class User extends Timestamped {
     @Column(name = "role", nullable = false)
     private UserRoleEnum role;
 
+    @Column(name = "followers_count")
+    private Long followersCount = 0L;
+
+    @Column(name = "following_count")
+    private Long followingCount = 0L;
+
+
     @ElementCollection
     @CollectionTable(name = "user_previous_passwords", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "previous_password")
@@ -72,5 +79,26 @@ public class User extends Timestamped {
         this.nickName = profileRequestDto.getNickName();
         this.info = profileRequestDto.getInfo();
         this.email = profileRequestDto.getEmail();
+    }
+
+    public void updateFollowCounts(Long followersCount, Long followingCount) {
+        this.followersCount = followersCount;
+        this.followingCount = followingCount;
+    }
+
+    public void incrementFollowersCount() {
+        this.followersCount++;
+    }
+
+    public void decrementFollowersCount() {
+        this.followersCount--;
+    }
+
+    public void incrementFollowingCount() {
+        this.followingCount++;
+    }
+
+    public void decrementFollowingCount() {
+        this.followingCount--;
     }
 }

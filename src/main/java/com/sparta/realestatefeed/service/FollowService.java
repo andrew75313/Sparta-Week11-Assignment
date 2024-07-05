@@ -8,6 +8,7 @@ import com.sparta.realestatefeed.exception.UserNotFoundException;
 import com.sparta.realestatefeed.repository.apart.ApartRepository;
 import com.sparta.realestatefeed.repository.follow.FollowRepository;
 import com.sparta.realestatefeed.repository.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class FollowService {
     private final UserRepository userRepository;
     private final ApartRepository apartRepository;
 
+    @Transactional
     public CommonDto<?> followUser(Long userId, User user) {
 
         String message = "팔로우를 했습니다.";
@@ -42,10 +44,16 @@ public class FollowService {
         Optional<Follow> optionalFollow = followRepository.findByFollowerAndFollowing(user, userToFollow);
 
         if (optionalFollow.isPresent()) {
+            follower.decrementFollowingCount();
+            userToFollow.decrementFollowersCount();
+
             Follow foundFollow = optionalFollow.get();
             message = "팔로우를 취소했습니다.";
             followRepository.delete(foundFollow);
         } else {
+            follower.incrementFollowingCount();
+            userToFollow.incrementFollowersCount();
+
             followRepository.save(new Follow(follower, userToFollow));
         }
 
