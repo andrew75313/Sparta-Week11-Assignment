@@ -34,4 +34,12 @@ public class FollowController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/followers/ranking")
+    public ResponseEntity<?> getFollowersRanking() {
+
+        CommonDto<?> response = followService.getFollowerRanking();
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

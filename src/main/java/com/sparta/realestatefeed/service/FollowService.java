@@ -2,6 +2,7 @@ package com.sparta.realestatefeed.service;
 
 import com.sparta.realestatefeed.dto.ApartResponseDto;
 import com.sparta.realestatefeed.dto.CommonDto;
+import com.sparta.realestatefeed.dto.ProfileResponseDto;
 import com.sparta.realestatefeed.entity.Follow;
 import com.sparta.realestatefeed.entity.User;
 import com.sparta.realestatefeed.exception.UserNotFoundException;
@@ -81,5 +82,14 @@ public class FollowService {
                 .toList();
 
         return new CommonDto<>(HttpStatus.OK.value(), "팔로우한 사용자들의 아파트 게시글이 조회되었습니다.", apartResponseDtoList);
+    }
+
+    public CommonDto<?> getFollowerRanking() {
+
+        List<User> topUserList = userRepository.getTopFollowerUser();
+
+        List<ProfileResponseDto> responseDtoList = topUserList.stream().map(ProfileResponseDto::new).toList();
+
+        return new CommonDto<>(HttpStatus.OK.value(), "팔로워 탑 10위 사용자가 조회되었습니다.", responseDtoList);
     }
 }
