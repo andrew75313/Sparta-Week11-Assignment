@@ -3,6 +3,7 @@ package com.sparta.realestatefeed.repository.like;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.entity.*;
+import com.sparta.realestatefeed.util.SizingConstants;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -68,8 +69,8 @@ public class LikeRepositoryImpl implements LikeJpaRepository {
                 .innerJoin(qLike.user, qUser).fetchJoin()
                 .where(qUser.userName.eq(user.getUserName()))
                 .orderBy(qLike.apart.createdAt.desc())
-                .offset(page * 5)
-                .limit(5)
+                .offset(page * SizingConstants.PAGE_SIZE)
+                .limit(SizingConstants.PAGE_SIZE)
                 .fetch();
 
         return likeList;
@@ -83,8 +84,8 @@ public class LikeRepositoryImpl implements LikeJpaRepository {
                 .innerJoin(qLike.user, qUser).fetchJoin()
                 .where(qUser.userName.eq(user.getUserName()))
                 .orderBy(qLike.qna.createdAt.desc())
-                .offset(page * 5)
-                .limit(5)
+                .offset(page * SizingConstants.PAGE_SIZE)
+                .limit(SizingConstants.PAGE_SIZE)
                 .fetch();
 
         return likeList;

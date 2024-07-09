@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.entity.QLike;
 import com.sparta.realestatefeed.entity.QUser;
 import com.sparta.realestatefeed.entity.User;
+import com.sparta.realestatefeed.util.SizingConstants;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class UserRepositoryImpl implements UserJpaRepository {
 
         List<User> topUserList = jpaQueryFactory.selectFrom(qUser)
                 .orderBy(qUser.followersCount.desc())
-                .limit(10)
+                .limit(SizingConstants.RANK_SIZE)
                 .fetch();
 
         return topUserList;

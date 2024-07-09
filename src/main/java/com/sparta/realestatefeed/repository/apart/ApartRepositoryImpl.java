@@ -6,6 +6,7 @@ import com.sparta.realestatefeed.entity.Apart;
 import com.sparta.realestatefeed.entity.QApart;
 import com.sparta.realestatefeed.entity.QUser;
 import com.sparta.realestatefeed.entity.User;
+import com.sparta.realestatefeed.util.SizingConstants;
 import lombok.RequiredArgsConstructor;
 
 import javax.management.Query;
@@ -51,8 +52,8 @@ public class ApartRepositoryImpl implements ApartJpaRepository {
             query.where(qApart.area.eq(area));
         }
 
-        List<Apart> apartList = query.offset(page * 5)
-                .limit(5)
+        List<Apart> apartList = query.offset(page * SizingConstants.PAGE_SIZE)
+                .limit(SizingConstants.PAGE_SIZE)
                 .fetch();
 
         return apartList;
@@ -64,8 +65,8 @@ public class ApartRepositoryImpl implements ApartJpaRepository {
         List<Apart> apartList = jpaQueryFactory.selectFrom(qApart)
                 .where(qApart.user.id.in(followingIdList))
                 .orderBy(qApart.createdAt.desc())
-                .offset(page * 5)
-                .limit(5)
+                .offset(page * SizingConstants.RANK_SIZE)
+                .limit(SizingConstants.RANK_SIZE)
                 .fetch();
 
         return apartList;
