@@ -1,10 +1,9 @@
 package com.sparta.realestatefeed.repository.follow;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sparta.realestatefeed.entity.Follow;
-import com.sparta.realestatefeed.entity.QFollow;
-import com.sparta.realestatefeed.entity.QUser;
-import com.sparta.realestatefeed.entity.User;
+import com.sparta.realestatefeed.entity.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public class FollowRepositoryImpl implements FollowJpaRepository {
     @Override
     public List<Follow> findByFollowerAndFollowingUserName(User follower, String followingUserName) {
 
-        var query = qFollow.follower.id.eq(follower.getId());
+        BooleanExpression query = qFollow.follower.id.eq(follower.getId());
 
         if (followingUserName != null) {
             query = query.and(qFollow.following.userName.eq(followingUserName));

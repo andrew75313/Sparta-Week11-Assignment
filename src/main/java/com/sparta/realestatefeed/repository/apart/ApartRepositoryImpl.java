@@ -1,5 +1,6 @@
 package com.sparta.realestatefeed.repository.apart;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.realestatefeed.entity.Apart;
 import com.sparta.realestatefeed.entity.QApart;
@@ -7,6 +8,7 @@ import com.sparta.realestatefeed.entity.QUser;
 import com.sparta.realestatefeed.entity.User;
 import lombok.RequiredArgsConstructor;
 
+import javax.management.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +44,7 @@ public class ApartRepositoryImpl implements ApartJpaRepository {
     @Override
     public List<Apart> findByAreaDateDescendingPaginated(String area, int page) {
 
-        var query = jpaQueryFactory.selectFrom(qApart)
+        JPAQuery<Apart> query = jpaQueryFactory.selectFrom(qApart)
                 .orderBy(qApart.createdAt.desc());
 
         if (area != null) {
