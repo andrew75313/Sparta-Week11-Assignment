@@ -38,16 +38,16 @@ public class LikeController {
     public ResponseEntity<?> getFavoriteAparts(@RequestParam(defaultValue = "1") int page,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CommonDto<?> response = likeService.getFavroiteAparts(page-1, userDetails.getUser());
+        CommonDto<?> response = likeService.getFavroiteAparts(page - 1, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/qna/like")
     public ResponseEntity<?> getFavoriteQnas(@RequestParam(defaultValue = "1") int page,
-                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CommonDto<?> response = likeService.getFavoriteQnas(page-1, userDetails.getUser());
+        CommonDto<?> response = likeService.getFavoriteQnas(page - 1, userDetails.getUser());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

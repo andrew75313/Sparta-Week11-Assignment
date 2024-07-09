@@ -45,7 +45,7 @@ public class QnAController {
     public ResponseEntity<CommonDto<List<QnAResponseDto>>> getAllQnAForApartId(@PathVariable Long apartId,
                                                                                @RequestParam(defaultValue = "1") int page) {
 
-        CommonDto<List<QnAResponseDto>> responseDto = qnAService.selectByApartId(apartId, page-1);
+        CommonDto<List<QnAResponseDto>> responseDto = qnAService.selectByApartId(apartId, page - 1);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
